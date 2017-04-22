@@ -23,25 +23,30 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
     }
 
     public componentDidMount() {
+        this.fetchData();
+    }
+
+    public fetchData() {
         var that = this;
         var state = this.state;
 
         axios.get(`http://test.semmweb.com/sparql-cabinet/api/sparql/queries?api_key=c45480aa-f4a5-4224-a9fe-a8ecc2353a64`)
             .then(function (response) {
                 state.queries = response.data;
+                //state.selectedQuery = response.data[0].id;
                 state.selectedQuery = '';
-                that.setState(state)
+                that.setState(state);
             })
             .catch(function (error) {
                 console.log(error);
             })
     }
 
-    public selectQuery(queryId: string) {
+    public selectQuery(queryId:string) {
         var state = this.state;
 
         state.selectedQuery = queryId;
-        this.setState(state)
+        this.setState(state);
     }
 
     public createNewQuery() {
@@ -62,22 +67,52 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
         this.setState(state);
     }
 
-    public saveQuery(query: IQuery) {
+    public saveQuery(query:IQuery) {
+
+        var that = this;
 
         if (this.state.recentlyAddedQueries.indexOf(query.id) > -1) {
-            console.log('saved');
+            var data = JSON.stringify(query);
+            axios.post('http://test.semmweb.com/sparql-cabinet/api/sparql/queries?api_key=c45480aa-f4a5-4224-a9fe-a8ecc2353a64', data, {
+                    headers: {'Content-Type': 'application/json'}
+                })
+                .then(function (response) {
+                    that.fetchData();
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
         } else {
-            console.log('edited');
+            var data = JSON.stringify(query);
+            axios.put('http://test.semmweb.com/sparql-cabinet/api/sparql/queries/' + query.id + '?api_key=c45480aa-f4a5-4224-a9fe-a8ecc2353a64', data, {
+                    headers: {'Content-Type': 'application/json'}
+                })
+                .then(function (response) {
+                    that.fetchData();
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
         }
+    }
 
-        this.state.queries.map((item, index) => {
-            if (item.id === query.id) {
-                var state = this.state;
+    public runQuery() {
+        console.log('running');
+    }
 
-                state.queries[index] = query;
-                this.setState(state);
-            }
-        })
+    public deleteQuery(queryId:string) {
+
+        var that = this;
+
+        console.log('delete ' + queryId);
+
+        axios.delete('http://test.semmweb.com/sparql-cabinet/api/sparql/queries/' + queryId + '?api_key=c45480aa-f4a5-4224-a9fe-a8ecc2353a64')
+            .then(function (response) {
+                that.fetchData();
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     }
 
     public render() {
@@ -85,21 +120,26 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
 
         if (this.state.queries.length > 0) {
             return <div>
-                <div className="col-xs-4">
+                <div className="col-xs-3">
                     <p>{this.props.appName}</p>
                     {this.state.queries.map(query => {
                         return <QueryItem key={query.id} queryName={query.name} id={query.id}
-                                          onSelect={this.selectQuery.bind(this, query.id)}/>
+                                          onSelect={this.selectQuery.bind(this, query.id)}
+                                          onDelete={this.deleteQuery.bind(this, query.id)}/>
                         })}
                     <button className="btn btn-primary" onClick={this.createNewQuery.bind(this)}>Add query</button>
                 </div>
-                {<div className="col-xs-5">
+                <div className="col-xs-5">
                     {this.state.queries.map(query => {
                         if (query.id == that.state.selectedQuery) {
-                            return <Editor key={query.id} query={query} onSave={this.saveQuery.bind(this)}/>
+                            return <Editor key={query.id} query={query} onSave={this.saveQuery.bind(this)}
+                                           onRun={this.runQuery.bind(this)}/>
                             }
                         })}
-                </div>}
+                </div>
+                <div className="col-xs-4">
+                    Results
+                </div>
             </div>
         } else {
             return <div>There are no Queries in the List</div>

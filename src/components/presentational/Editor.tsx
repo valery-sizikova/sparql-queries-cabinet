@@ -13,19 +13,19 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
         }
     }
 
-    public handleNameEditing(e: any) {
+    public handleNameEditing(e:any) {
         var state = this.state;
         state.query.name = e.target.value;
         this.setState(state);
     }
 
-    public handleDescriptionEditing(e: any) {
+    public handleDescriptionEditing(e:any) {
         var state = this.state;
         state.query.description = e.target.value;
         this.setState(state);
     }
 
-    public handleQueryEditing(e: any) {
+    public handleQueryEditing(e:any) {
         var state = this.state;
         state.query.query = e.target.value;
         this.setState(state);
@@ -34,16 +34,20 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
     render() {
         return <div>
             <p>Name:
-                <input type="text" value={this.state.query.name} onChange={this.handleNameEditing.bind(this)} />
+                <input type="text" value={this.state.query.name} onChange={this.handleNameEditing.bind(this)}/>
             </p>
             <p>Description:
-                <input type="text" value={this.state.query.description} onChange={this.handleDescriptionEditing.bind(this)} />
+                <input type="text" value={this.state.query.description}
+                       onChange={this.handleDescriptionEditing.bind(this)}/>
             </p>
             <p>Query:
-                <textarea value={this.state.query.query} onChange={this.handleQueryEditing.bind(this)} />
+                <textarea value={this.state.query.query} onChange={this.handleQueryEditing.bind(this)}/>
             </p>
             <div style={{marginTop: '50px'}}>
-                <button className="btn btn-primary" onClick={this.props.onSave.bind(this, this.state.query)}>Save</button>
+                <button className="btn btn-primary" onClick={this.props.onSave.bind(this, this.state.query)}>Save
+                </button>
+                <button className="btn btn-primary" onClick={this.props.onRun.bind(this, this.state.query.query)}>Run
+                </button>
             </div>
         </div>;
     }

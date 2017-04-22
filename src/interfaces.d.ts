@@ -11,13 +11,15 @@ interface IQuery {
 interface IQueryItemProps {
     id: string,
     queryName: string,
-    onSelect(): void
+    onSelect(): void,
+    onDelete(): void
 }
 
 // Defines the interface of the properties of Editor component
 interface IEditorProps {
     query: IQuery,
-    onSave(query: IQuery): void
+    onSave(query:IQuery): void,
+    onRun(queryString:string): void
 }
 
 // Defines the interface of the state of Editor component
