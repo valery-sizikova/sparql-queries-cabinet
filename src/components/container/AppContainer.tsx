@@ -112,6 +112,7 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
             })
             .catch(function (error) {
                 console.log(error);
+                alert('Not possible to run this query. Following error happened:\n\n' + error + '\n\nPlease correct the query and run it again.');
             })
     }
 
