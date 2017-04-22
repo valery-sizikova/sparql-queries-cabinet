@@ -42,10 +42,12 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
     }
 
     public selectQuery(queryId:string) {
-        var state = this.state;
-
-        state.selectedQuery = queryId;
-        this.setState(state);
+        if (queryId !== this.state.selectedQuery) {
+            var state = this.state;
+            document.getElementById('results').innerHTML = '';
+            state.selectedQuery = queryId;
+            this.setState(state);
+        }
     }
 
     public createNewQuery() {
@@ -95,8 +97,17 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
         }
     }
 
-    public runQuery() {
-        console.log('running');
+    public runQuery(queryString:string) {
+        axios.get(`http://test.semmweb.com/rdf4j-server/repositories/pizza`, {
+                params: {query: queryString},
+                headers: {'Content-Type': 'application/sparql-query', 'Accept': 'application/sparql-results+json'}
+            })
+            .then(function (response) {
+                document.getElementById('results').innerHTML = JSON.stringify(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
     }
 
     public deleteQuery(queryId:string) {
@@ -128,7 +139,7 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
                         })}
                     <button className="btn btn-primary" onClick={this.createNewQuery.bind(this)}>Add query</button>
                 </div>
-                <div className="col-xs-5">
+                <div className="col-xs-3">
                     {this.state.queries.map(query => {
                         if (query.id == that.state.selectedQuery) {
                             return <Editor key={query.id} query={query} onSave={this.saveQuery.bind(this)}
@@ -136,8 +147,9 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
                             }
                         })}
                 </div>
-                <div className="col-xs-4">
+                <div className="col-xs-6">
                     Results
+                    <div id="results"></div>
                 </div>
             </div>
         } else {
