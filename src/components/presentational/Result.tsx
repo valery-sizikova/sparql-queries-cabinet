@@ -18,7 +18,7 @@ export default class Result extends React.Component<IResultProps, {}> {
                 <option value="application/sparql-results+xml">XML</option>
                 <option value="application/sparql-results+json">JSON</option>
             </select>
-            <textarea value={this.props.result} />
+            <textarea value={this.props.result}/>
         </div>;
     }
 }

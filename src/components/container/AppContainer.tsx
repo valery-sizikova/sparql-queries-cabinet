@@ -157,7 +157,8 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
                         })}
                 </div>
                 <div className="col-xs-6">
-                    <Result format={this.state.resultFormat} result={this.state.result} onChangeFormat={this.changeFormat.bind(this)}/>
+                    <Result format={this.state.resultFormat} result={this.state.result}
+                            onChangeFormat={this.changeFormat.bind(this)}/>
                 </div>
             </div>
         } else {
