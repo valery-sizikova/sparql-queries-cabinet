@@ -9,24 +9,15 @@ interface IQuery {
 
 // Defines the interface of the properties of QueryItem component
 interface IQueryItemProps {
-    key: string,
     id: string,
     queryName: string,
-    onSelect: any
-    //currently_selected: boolean,
-    //onSave: void,
-    //onRun: void,
-    //onEdit: void,
-    //onDelete: void
+    onSelect(): void
 }
-
-// Defines the interface of the state of QueryItem component
-interface IQueryItemState {}
 
 // Defines the interface of the properties of Editor component
 interface IEditorProps {
     query: IQuery,
-    onSave: any
+    onSave(query: IQuery): void
 }
 
 // Defines the interface of the state of Editor component

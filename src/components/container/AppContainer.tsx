@@ -37,7 +37,7 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
             })
     }
 
-    public selectQuery(queryId:string) {
+    public selectQuery(queryId: string) {
         var state = this.state;
 
         state.selectedQuery = queryId;
@@ -62,7 +62,7 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
         this.setState(state);
     }
 
-    public onSave(query: IQuery) {
+    public saveQuery(query: IQuery) {
 
         if (this.state.recentlyAddedQueries.indexOf(query.id) > -1) {
             console.log('saved');
@@ -96,7 +96,7 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
                 {<div className="col-xs-5">
                     {this.state.queries.map(query => {
                         if (query.id == that.state.selectedQuery) {
-                            return <Editor key={query.id} query={query} onSave={this.onSave.bind(this)}/>
+                            return <Editor key={query.id} query={query} onSave={this.saveQuery.bind(this)}/>
                             }
                         })}
                 </div>}
