@@ -23,18 +23,17 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
     }
 
     public componentDidMount() {
-        this.fetchData();
+        this.fetchData(true);
     }
 
-    public fetchData() {
+    public fetchData(isInitialFetching:boolean) {
         var that = this;
         var state = this.state;
 
         axios.get(`http://test.semmweb.com/sparql-cabinet/api/sparql/queries?api_key=c45480aa-f4a5-4224-a9fe-a8ecc2353a64`)
             .then(function (response) {
                 state.queries = response.data;
-                //state.selectedQuery = response.data[0].id;
-                state.selectedQuery = '';
+                isInitialFetching === true ? state.selectedQuery = response.data[0].id : '';
                 that.setState(state);
             })
             .catch(function (error) {
@@ -77,7 +76,7 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
                     headers: {'Content-Type': 'application/json'}
                 })
                 .then(function (response) {
-                    that.fetchData();
+                    that.fetchData(false);
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -88,7 +87,7 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
                     headers: {'Content-Type': 'application/json'}
                 })
                 .then(function (response) {
-                    that.fetchData();
+                    that.fetchData(false);
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -108,7 +107,7 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
 
         axios.delete('http://test.semmweb.com/sparql-cabinet/api/sparql/queries/' + queryId + '?api_key=c45480aa-f4a5-4224-a9fe-a8ecc2353a64')
             .then(function (response) {
-                that.fetchData();
+                that.fetchData(false);
             })
             .catch(function (error) {
                 console.log(error);
