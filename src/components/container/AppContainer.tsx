@@ -18,7 +18,8 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
         this.state = {
             selectedQuery: '',
             queries: [],
-            recentlyAddedQueries: []
+            recentlyAddedQueries: [],
+            resultFormat: 'text/csv'
         };
     }
 
@@ -98,9 +99,10 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
     }
 
     public runQuery(queryString:string) {
+        var that = this;
         axios.get(`http://test.semmweb.com/rdf4j-server/repositories/pizza`, {
                 params: {query: queryString},
-                headers: {'Content-Type': 'application/sparql-query', 'Accept': 'application/sparql-results+json'}
+                headers: {'Content-Type': 'application/sparql-query', 'Accept': that.state.resultFormat}
             })
             .then(function (response) {
                 document.getElementById('results').innerHTML = JSON.stringify(response);
@@ -123,6 +125,13 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
             .catch(function (error) {
                 console.log(error);
             });
+    }
+
+    public handleResultFormatChange(e:any) {
+        var state = this.state;
+
+        state.resultFormat = e.target.value;
+        this.setState(state);
     }
 
     public render() {
@@ -149,6 +158,12 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
                 </div>
                 <div className="col-xs-6">
                     Results
+                    <select value={this.state.resultFormat} onChange={this.handleResultFormatChange.bind(this)}>
+                        <option value="text/csv">CSV</option>
+                        <option value="text/tab-separated-values">TSV</option>
+                        <option value="application/sparql-results+xml">XML</option>
+                        <option value="application/sparql-results+json">JSON</option>
+                    </select>
                     <div id="results"></div>
                 </div>
             </div>

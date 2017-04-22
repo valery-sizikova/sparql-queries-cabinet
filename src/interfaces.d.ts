@@ -36,5 +36,6 @@ interface IAppContainerProps {
 interface IAppContainerState {
     selectedQuery: string,
     queries: Array<IQuery>,
-    recentlyAddedQueries: Array<string>
+    recentlyAddedQueries: Array<string>,
+    resultFormat: string
 }
