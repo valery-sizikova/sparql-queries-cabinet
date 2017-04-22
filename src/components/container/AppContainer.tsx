@@ -7,6 +7,7 @@ import {Promise} from "es6-promise";
 
 import QueryItem from "./../presentational/QueryItem";
 import Editor from "./../presentational/Editor";
+import Result from "./../presentational/Result";
 import {Utils} from "./../../utils";
 import {Constants} from "./../../constants";
 
@@ -19,7 +20,8 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
             selectedQuery: '',
             queries: [],
             recentlyAddedQueries: [],
-            resultFormat: 'text/csv'
+            resultFormat: 'text/csv',
+            result: ''
         };
     }
 
@@ -45,7 +47,6 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
     public selectQuery(queryId:string) {
         if (queryId !== this.state.selectedQuery) {
             var state = this.state;
-            document.getElementById('results').innerHTML = '';
             state.selectedQuery = queryId;
             this.setState(state);
         }
@@ -105,7 +106,9 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
                 headers: {'Content-Type': 'application/sparql-query', 'Accept': that.state.resultFormat}
             })
             .then(function (response) {
-                document.getElementById('results').innerHTML = JSON.stringify(response);
+                var state = that.state;
+                state.result = that.state.resultFormat === 'application/sparql-results+json' ? JSON.stringify(response.data) : response.data;
+                that.setState(state);
             })
             .catch(function (error) {
                 console.log(error);
@@ -113,10 +116,7 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
     }
 
     public deleteQuery(queryId:string) {
-
         var that = this;
-
-        console.log('delete ' + queryId);
 
         axios.delete('http://test.semmweb.com/sparql-cabinet/api/sparql/queries/' + queryId + '?api_key=c45480aa-f4a5-4224-a9fe-a8ecc2353a64')
             .then(function (response) {
@@ -127,10 +127,10 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
             });
     }
 
-    public handleResultFormatChange(e:any) {
+    public changeFormat(format:string) {
         var state = this.state;
 
-        state.resultFormat = e.target.value;
+        state.resultFormat = format;
         this.setState(state);
     }
 
@@ -157,14 +157,7 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
                         })}
                 </div>
                 <div className="col-xs-6">
-                    Results
-                    <select value={this.state.resultFormat} onChange={this.handleResultFormatChange.bind(this)}>
-                        <option value="text/csv">CSV</option>
-                        <option value="text/tab-separated-values">TSV</option>
-                        <option value="application/sparql-results+xml">XML</option>
-                        <option value="application/sparql-results+json">JSON</option>
-                    </select>
-                    <div id="results"></div>
+                    <Result format={this.state.resultFormat} result={this.state.result} onChangeFormat={this.changeFormat.bind(this)}/>
                 </div>
             </div>
         } else {

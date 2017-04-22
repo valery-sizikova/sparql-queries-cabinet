@@ -27,6 +27,13 @@ interface IEditorState {
     query: IQuery
 }
 
+// Defines the interface of the properties of Result component
+interface IResultProps {
+    format: string,
+    result: string,
+    onChangeFormat(format:string): void
+}
+
 // Defines the interface of the properties of AppContainer component
 interface IAppContainerProps {
     appName: string
@@ -37,5 +44,6 @@ interface IAppContainerState {
     selectedQuery: string,
     queries: Array<IQuery>,
     recentlyAddedQueries: Array<string>,
-    resultFormat: string
+    resultFormat: string,
+    result: string
 }
