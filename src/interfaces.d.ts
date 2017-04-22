@@ -10,7 +10,8 @@ interface IQuery {
 // Defines the interface of the properties of QueryItem component
 interface IQueryItemProps {
     key: string,
-    query: IQuery,
+    id: string,
+    queryName: string,
     onSelect: any
     //currently_selected: boolean,
     //onSave: void,
@@ -20,43 +21,27 @@ interface IQueryItemProps {
 }
 
 // Defines the interface of the state of QueryItem component
-interface IQueryItemState {
-    editText: string
-}
+interface IQueryItemState {}
 
 // Defines the interface of the properties of Editor component
 interface IEditorProps {
-    queryText: string,
-    descriptionText: string
+    query: IQuery,
+    onSave: any
 }
 
 // Defines the interface of the state of Editor component
 interface IEditorState {
-    editQueryText: string,
-    editDescriptionText: string
-}
-
-// Defines the QueryAppModel interface
-interface IQueryAppModel {
-    key: string,
-    name: string,
-    select(queryId: string): void
-    //queries: Array<IQuery>,
-    //onChanges: Array<any>,
-    //subscribe(onChange),
-    //inform(),
-    //addQuery(title: string),
-    //destroy(queryToDestroy),
-    //save(queryToSave, text)
+    query: IQuery
 }
 
 // Defines the interface of the properties of AppContainer component
 interface IAppContainerProps {
-    model: IQueryAppModel
+    appName: string
 }
 
 // Defines the interface of the state of AppContainer component
 interface IAppContainerState {
     selectedQuery: string,
-    queries: Array<IQuery>
+    queries: Array<IQuery>,
+    recentlyAddedQueries: Array<string>
 }
