@@ -15,18 +15,24 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
 
     public handleNameEditing(e:any) {
         var state = this.state;
+        this.props.setQueryToMutated(true);
+
         state.query.name = e.target.value;
         this.setState(state);
     }
 
     public handleDescriptionEditing(e:any) {
         var state = this.state;
+        this.props.setQueryToMutated(true);
+
         state.query.description = e.target.value;
         this.setState(state);
     }
 
     public handleQueryEditing(e:any) {
         var state = this.state;
+        this.props.setQueryToMutated(true);
+
         state.query.query = e.target.value;
         this.setState(state);
     }

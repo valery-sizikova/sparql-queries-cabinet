@@ -4,7 +4,7 @@ interface IQuery {
     name: string,
     description: string,
     creator: string,
-    query: string
+    query: string,
 }
 
 // Defines the interface of the properties of QueryItem component
@@ -18,6 +18,7 @@ interface IQueryItemProps {
 // Defines the interface of the properties of Editor component
 interface IEditorProps {
     query: IQuery,
+    setQueryToMutated(isMutated:boolean): void,
     onSave(query:IQuery): void,
     onRun(queryString:string): void
 }
@@ -43,7 +44,8 @@ interface IAppContainerProps {
 interface IAppContainerState {
     selectedQuery: IQuery,
     queries: Array<IQuery>,
-    recentlyAddedQueries: Array<string>,
+    recentlyAddedQuery: string,
     resultFormat: string,
-    result: string
+    result: string,
+    wasMutated?: boolean
 }

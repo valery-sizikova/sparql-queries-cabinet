@@ -8,7 +8,6 @@ import {Promise} from "es6-promise";
 import QueryItem from "./../presentational/QueryItem";
 import Editor from "./../presentational/Editor";
 import Result from "./../presentational/Result";
-import {Utils} from "./../../utils";
 import {Constants} from "./../../constants";
 
 export default class AppContainer extends React.Component<IAppContainerProps, IAppContainerState> {
@@ -25,30 +24,32 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
                 query: ''
             },
             queries: [],
-            recentlyAddedQueries: [],
+            recentlyAddedQuery: '',
             resultFormat: 'text/csv',
-            result: ''
+            result: '',
+            wasMutated: false
         };
     }
 
     public componentDidMount() {
-        this.fetchData(true);
+        this.fetchData();
     }
 
-    public fetchData(withFirstQuerySelection:boolean) {
+    public fetchData() {
         var that = this;
         var state = this.state;
 
         axios.get(`http://test.semmweb.com/sparql-cabinet/api/sparql/queries?api_key=c45480aa-f4a5-4224-a9fe-a8ecc2353a64`)
             .then(function (response) {
                 state.queries = response.data;
-                withFirstQuerySelection === true && response.data.length !== 0 ? state.selectedQuery = response.data[0] : {
-                    id: '',
-                    name: '',
-                    description: '',
-                    creator: '',
-                    query: ''
-                };
+
+                //sorting of queries by time of creation (id is a timestamp), descending
+                state.queries.sort(function (a, b) {
+                    return parseFloat(b.id) - parseFloat(a.id);
+                });
+
+                response.data.length !== 0 ? state.selectedQuery = state.queries[0] : '';
+
                 that.setState(state);
             })
             .catch(function (error) {
@@ -58,15 +59,19 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
 
     public selectQuery(query:IQuery) {
         if (query.id !== this.state.selectedQuery.id) {
+            // save current query before switching to the other
+            this.saveQuery(this.state.selectedQuery);
+
+            // select the new query
             var state = this.state;
             state.selectedQuery = query;
             this.setState(state);
         }
     }
 
-    public createNewQuery() {
+    public createNewQuery(isFirstQuery:boolean) {
         var newQuery = {
-            id: Utils.uuid(),
+            id: Date.now().toString(),
             name: 'New SPARQL Query',
             description: '',
             creator: Constants.CURRENT_USER,
@@ -75,10 +80,10 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
 
         var state = this.state;
 
-        state.queries.push(newQuery);
-        state.recentlyAddedQueries.push(newQuery.id);
-        state.selectedQuery = newQuery;
+        isFirstQuery ? state.selectedQuery = newQuery : this.selectQuery(newQuery);
 
+        state.queries.unshift(newQuery);
+        state.recentlyAddedQuery = newQuery.id;
         this.setState(state);
     }
 
@@ -86,26 +91,32 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
         var that = this;
         var data = JSON.stringify(query);
 
-        if (this.state.recentlyAddedQueries.indexOf(query.id) > -1) {
+        if (this.state.recentlyAddedQuery === query.id) {
+            var state = that.state;
+
+            state.recentlyAddedQuery = '';
+            that.setState(state);
             axios.post('http://test.semmweb.com/sparql-cabinet/api/sparql/queries?api_key=c45480aa-f4a5-4224-a9fe-a8ecc2353a64', data, {
                     headers: {'Content-Type': 'application/json'}
                 })
                 .then(function (response) {
-                    that.fetchData(false);
+                    that.setCurrentQueryToMutated(false);
                 })
                 .catch(function (error) {
                     console.log(error);
                 });
         } else {
-            axios.put('http://test.semmweb.com/sparql-cabinet/api/sparql/queries/' + query.id + '?api_key=c45480aa-f4a5-4224-a9fe-a8ecc2353a64', data, {
-                    headers: {'Content-Type': 'application/json'}
-                })
-                .then(function (response) {
-                    that.fetchData(false);
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
+            if (this.state.wasMutated) {
+                axios.put('http://test.semmweb.com/sparql-cabinet/api/sparql/queries/' + query.id + '?api_key=c45480aa-f4a5-4224-a9fe-a8ecc2353a64', data, {
+                        headers: {'Content-Type': 'application/json'}
+                    })
+                    .then(function (response) {
+                        that.setCurrentQueryToMutated(false);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            }
         }
     }
 
@@ -128,10 +139,11 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
 
     public deleteQuery(queryId:string) {
         var that = this;
+        this.saveQuery(this.state.selectedQuery);
 
         axios.delete('http://test.semmweb.com/sparql-cabinet/api/sparql/queries/' + queryId + '?api_key=c45480aa-f4a5-4224-a9fe-a8ecc2353a64')
             .then(function (response) {
-                that.fetchData(false);
+                that.fetchData();
             })
             .catch(function (error) {
                 console.log(error);
@@ -145,9 +157,14 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
         this.setState(state);
     }
 
-    public render() {
-        var that = this;
+    public setCurrentQueryToMutated(wasMutated:boolean) {
+        var state = this.state;
 
+        state.wasMutated = wasMutated;
+        this.setState(state);
+    }
+
+    public render() {
         if (this.state.queries.length > 0) {
             return <div>
                 <div className="col-xs-3">
@@ -157,11 +174,14 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
                                           onSelect={this.selectQuery.bind(this, query)}
                                           onDelete={this.deleteQuery.bind(this, query.id)}/>
                         })}
-                    <button className="btn btn-primary" onClick={this.createNewQuery.bind(this)}>Add query</button>
+                    <button className="btn btn-primary" onClick={this.createNewQuery.bind(this, false)}>Add query
+                    </button>
                 </div>
                 <div className="col-xs-3">
-                    <Editor key={this.state.selectedQuery.id} query={this.state.selectedQuery} onSave={this.saveQuery.bind(this)}
-                            onRun={this.runQuery.bind(this)}/>
+                    <Editor key={this.state.selectedQuery.id} query={this.state.selectedQuery}
+                            onSave={this.saveQuery.bind(this)}
+                            onRun={this.runQuery.bind(this)}
+                            setQueryToMutated={this.setCurrentQueryToMutated.bind(this)}/>
                 </div>
                 <div className="col-xs-6">
                     <Result format={this.state.resultFormat} result={this.state.result}
@@ -171,7 +191,7 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
         } else {
             return <div>
                 There are no Queries in the List
-                <button className="btn btn-primary" onClick={this.createNewQuery.bind(this)}>Add query</button>
+                <button className="btn btn-primary" onClick={this.createNewQuery.bind(this, true)}>Add query</button>
             </div>
         }
     }
