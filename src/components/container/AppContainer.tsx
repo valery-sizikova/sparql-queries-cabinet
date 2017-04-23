@@ -29,14 +29,14 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
         this.fetchData(true);
     }
 
-    public fetchData(isInitialFetching:boolean) {
+    public fetchData(withFirstQuerySelection:boolean) {
         var that = this;
         var state = this.state;
 
         axios.get(`http://test.semmweb.com/sparql-cabinet/api/sparql/queries?api_key=c45480aa-f4a5-4224-a9fe-a8ecc2353a64`)
             .then(function (response) {
                 state.queries = response.data;
-                isInitialFetching === true ? state.selectedQuery = response.data[0].id : '';
+                withFirstQuerySelection === true && response.data.length !== 0 ? state.selectedQuery = response.data[0].id : '';
                 that.setState(state);
             })
             .catch(function (error) {
@@ -163,7 +163,10 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
                 </div>
             </div>
         } else {
-            return <div>There are no Queries in the List</div>
+            return <div>
+                There are no Queries in the List
+                <button className="btn btn-primary" onClick={this.createNewQuery.bind(this)}>Add query</button>
+            </div>
         }
     }
 }
