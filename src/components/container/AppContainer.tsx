@@ -17,7 +17,13 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
         super(props);
 
         this.state = {
-            selectedQuery: '',
+            selectedQuery: {
+                id: '',
+                name: '',
+                description: '',
+                creator: '',
+                query: ''
+            },
             queries: [],
             recentlyAddedQueries: [],
             resultFormat: 'text/csv',
@@ -36,7 +42,13 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
         axios.get(`http://test.semmweb.com/sparql-cabinet/api/sparql/queries?api_key=c45480aa-f4a5-4224-a9fe-a8ecc2353a64`)
             .then(function (response) {
                 state.queries = response.data;
-                withFirstQuerySelection === true && response.data.length !== 0 ? state.selectedQuery = response.data[0].id : '';
+                withFirstQuerySelection === true && response.data.length !== 0 ? state.selectedQuery = response.data[0] : {
+                    id: '',
+                    name: '',
+                    description: '',
+                    creator: '',
+                    query: ''
+                };
                 that.setState(state);
             })
             .catch(function (error) {
@@ -44,10 +56,10 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
             })
     }
 
-    public selectQuery(queryId:string) {
-        if (queryId !== this.state.selectedQuery) {
+    public selectQuery(query:IQuery) {
+        if (query.id !== this.state.selectedQuery.id) {
             var state = this.state;
-            state.selectedQuery = queryId;
+            state.selectedQuery = query;
             this.setState(state);
         }
     }
@@ -65,17 +77,16 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
 
         state.queries.push(newQuery);
         state.recentlyAddedQueries.push(newQuery.id);
-        state.selectedQuery = newQuery.id;
+        state.selectedQuery = newQuery;
 
         this.setState(state);
     }
 
     public saveQuery(query:IQuery) {
-
         var that = this;
+        var data = JSON.stringify(query);
 
         if (this.state.recentlyAddedQueries.indexOf(query.id) > -1) {
-            var data = JSON.stringify(query);
             axios.post('http://test.semmweb.com/sparql-cabinet/api/sparql/queries?api_key=c45480aa-f4a5-4224-a9fe-a8ecc2353a64', data, {
                     headers: {'Content-Type': 'application/json'}
                 })
@@ -86,7 +97,6 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
                     console.log(error);
                 });
         } else {
-            var data = JSON.stringify(query);
             axios.put('http://test.semmweb.com/sparql-cabinet/api/sparql/queries/' + query.id + '?api_key=c45480aa-f4a5-4224-a9fe-a8ecc2353a64', data, {
                     headers: {'Content-Type': 'application/json'}
                 })
@@ -144,18 +154,14 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
                     <p>{this.props.appName}</p>
                     {this.state.queries.map(query => {
                         return <QueryItem key={query.id} queryName={query.name} id={query.id}
-                                          onSelect={this.selectQuery.bind(this, query.id)}
+                                          onSelect={this.selectQuery.bind(this, query)}
                                           onDelete={this.deleteQuery.bind(this, query.id)}/>
                         })}
                     <button className="btn btn-primary" onClick={this.createNewQuery.bind(this)}>Add query</button>
                 </div>
                 <div className="col-xs-3">
-                    {this.state.queries.map(query => {
-                        if (query.id == that.state.selectedQuery) {
-                            return <Editor key={query.id} query={query} onSave={this.saveQuery.bind(this)}
-                                           onRun={this.runQuery.bind(this)}/>
-                            }
-                        })}
+                    <Editor key={this.state.selectedQuery.id} query={this.state.selectedQuery} onSave={this.saveQuery.bind(this)}
+                            onRun={this.runQuery.bind(this)}/>
                 </div>
                 <div className="col-xs-6">
                     <Result format={this.state.resultFormat} result={this.state.result}

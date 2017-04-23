@@ -41,7 +41,7 @@ interface IAppContainerProps {
 
 // Defines the interface of the state of AppContainer component
 interface IAppContainerState {
-    selectedQuery: string,
+    selectedQuery: IQuery,
     queries: Array<IQuery>,
     recentlyAddedQueries: Array<string>,
     resultFormat: string,
