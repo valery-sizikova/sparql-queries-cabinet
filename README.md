@@ -28,7 +28,7 @@ Container component doesn't include any DOM markup but only wrappers for present
 
 Presentational components are basically stateless (except Editor component, which has only UI state) and they are created to simply render the app functional parts and data.
 
-For making requests to the API I have chosen axios promise based HTTP client. It's a simple way of handling asynchronous requests and performing actions on the retrieved data.
+For making requests to the API I have chosen [axios](https://github.com/mzabriskie/axios) promise based HTTP client. It's a simple way of handling asynchronous requests and performing actions on the retrieved data.
 
 As I have decided to implement autosave feature in this app I had to solve the challenge of not sending POST and PUT requests to the server too often as it can decrease the app performance. That's why I have decided to fetch data once when the user loads the application and then perform all the actions on a local copy of the response. I also reduced the number of PUT requests by checking if any editing actions were performed on a particular query and sending the request only in case they were.
 
