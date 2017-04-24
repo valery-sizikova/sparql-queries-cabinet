@@ -10,15 +10,17 @@ export default class Result extends React.Component<IResultProps, {}> {
     }
 
     render() {
-        return <div>
-            Results
-            <select value={this.props.format} onChange={this.handleResultFormatChange.bind(this)}>
-                <option value="text/csv">CSV</option>
-                <option value="text/tab-separated-values">TSV</option>
-                <option value="application/sparql-results+xml">XML</option>
-                <option value="application/sparql-results+json">JSON</option>
-            </select>
-            <textarea value={this.props.result}/>
+        return <div className="results">
+            <div className="tab-controls form-group">
+                <select className="form-control" value={this.props.format}
+                        onChange={this.handleResultFormatChange.bind(this)}>
+                    <option value="text/csv">CSV</option>
+                    <option value="text/tab-separated-values">TSV</option>
+                    <option value="application/sparql-results+xml">XML</option>
+                    <option value="application/sparql-results+json">JSON</option>
+                </select>
+            </div>
+            <textarea disabled="disabled" value={this.props.result} placeholder="Your results will be here once you run your query"/>
         </div>;
     }
 }

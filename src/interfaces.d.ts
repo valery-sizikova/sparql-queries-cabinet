@@ -47,5 +47,5 @@ interface IAppContainerState {
     recentlyAddedQuery: string,
     resultFormat: string,
     result: string,
-    wasMutated?: boolean
+    wasMutated: boolean
 }

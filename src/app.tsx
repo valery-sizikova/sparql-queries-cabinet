@@ -8,7 +8,7 @@ import AppContainer from './components/container/AppContainer';
 
 function render() {
     ReactDOM.render(
-        <AppContainer appName={'List of SPARQL Queries'}/>,
+        <AppContainer appName={'My Queries'}/>,
         document.getElementById("root")
     );
 }

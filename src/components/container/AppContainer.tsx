@@ -65,6 +65,7 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
             // select the new query
             var state = this.state;
             state.selectedQuery = query;
+            state.result = '';
             this.setState(state);
         }
     }
@@ -165,34 +166,43 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
     }
 
     public render() {
+
+        var queries, addButton;
+
         if (this.state.queries.length > 0) {
-            return <div>
-                <div className="col-xs-3">
-                    <p>{this.props.appName}</p>
-                    {this.state.queries.map(query => {
-                        return <QueryItem key={query.id} queryName={query.name} id={query.id}
-                                          onSelect={this.selectQuery.bind(this, query)}
-                                          onDelete={this.deleteQuery.bind(this, query.id)}/>
-                        })}
-                    <button className="btn btn-primary" onClick={this.createNewQuery.bind(this, false)}>Add query
-                    </button>
-                </div>
-                <div className="col-xs-3">
-                    <Editor key={this.state.selectedQuery.id} query={this.state.selectedQuery}
-                            onSave={this.saveQuery.bind(this)}
-                            onRun={this.runQuery.bind(this)}
-                            setQueryToMutated={this.setCurrentQueryToMutated.bind(this)}/>
-                </div>
-                <div className="col-xs-6">
-                    <Result format={this.state.resultFormat} result={this.state.result}
-                            onChangeFormat={this.changeFormat.bind(this)}/>
-                </div>
-            </div>
+            queries = this.state.queries.map(query => {
+                return <QueryItem key={query.id} queryName={query.name} id={query.id}
+                                  onSelect={this.selectQuery.bind(this, query)}
+                                  onDelete={this.deleteQuery.bind(this, query.id)}/>
+            });
+            addButton = <button className="btn btn-primary" onClick={this.createNewQuery.bind(this, false)}>
+                Add query
+            </button>;
         } else {
-            return <div>
-                There are no Queries in the List
-                <button className="btn btn-primary" onClick={this.createNewQuery.bind(this, true)}>Add query</button>
-            </div>
+            queries = <p>There are no queries in the list</p>;
+            addButton = <button className="btn btn-primary" onClick={this.createNewQuery.bind(this, true)}>
+                Add first query
+            </button>;
         }
+
+        return <div className="app-container">
+            <div className="col-xs-2 list-container">
+                <p className="app-name">{this.props.appName}</p>
+                {queries}
+                {addButton}
+            </div>
+            <div className="col-xs-4 editor-container">
+                <p className="tab-header">QUERY</p>
+                <Editor key={this.state.selectedQuery.id} query={this.state.selectedQuery}
+                        onSave={this.saveQuery.bind(this)}
+                        onRun={this.runQuery.bind(this)}
+                        setQueryToMutated={this.setCurrentQueryToMutated.bind(this)}/>
+            </div>
+            <div className="col-xs-6 result-container">
+                <p className="tab-header">RESULTS</p>
+                <Result format={this.state.resultFormat} result={this.state.result}
+                        onChangeFormat={this.changeFormat.bind(this)}/>
+            </div>
+        </div>
     }
 }
