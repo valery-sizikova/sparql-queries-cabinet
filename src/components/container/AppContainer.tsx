@@ -196,24 +196,24 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
                 </button>;
         }
 
-        return <div className="app-container">
-            <div className="col-xs-2 list-container">
+        return <main className="app-container">
+            <nav className="col-xs-2 list-container">
                 <p className="app-name">{this.props.appName}</p>
                 {queries}
                 {addButton}
-            </div>
-            <div className="col-xs-4 editor-container">
+            </nav>
+            <section className="col-xs-4 editor-container">
                 <p className="tab-header">QUERY</p>
                 <Editor key={this.state.selectedQuery.id} query={this.state.selectedQuery}
                         onSave={this.saveQuery.bind(this)}
                         onRun={this.runQuery.bind(this)}
                         setQueryToMutated={this.setCurrentQueryToMutated.bind(this)}/>
-            </div>
-            <div className="col-xs-6 result-container">
+            </section>
+            <section className="col-xs-6 result-container">
                 <p className="tab-header">RESULTS</p>
                 <Result format={this.state.resultFormat} result={this.state.result}
                         onChangeFormat={this.changeFormat.bind(this)}/>
-            </div>
-        </div>
+            </section>
+        </main>
     }
 }
