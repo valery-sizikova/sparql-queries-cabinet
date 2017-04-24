@@ -48,7 +48,15 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
                     return parseFloat(b.id) - parseFloat(a.id);
                 });
 
-                response.data.length !== 0 ? state.selectedQuery = state.queries[0] : '';
+                var emptyQuery = {
+                    id: '',
+                    name: '',
+                    description: '',
+                    creator: '',
+                    query: ''
+                };
+
+                response.data.length !== 0 ? state.selectedQuery = state.queries[0] : state.selectedQuery = emptyQuery;
 
                 that.setState(state);
             })
@@ -173,16 +181,19 @@ export default class AppContainer extends React.Component<IAppContainerProps, IA
             queries = this.state.queries.map(query => {
                 return <QueryItem key={query.id} queryName={query.name} id={query.id}
                                   onSelect={this.selectQuery.bind(this, query)}
-                                  onDelete={this.deleteQuery.bind(this, query.id)}/>
+                                  onDelete={this.deleteQuery.bind(this, query.id)}
+                                  isSelected={query.id === this.state.selectedQuery.id}/>
             });
-            addButton = <button className="btn btn-primary" onClick={this.createNewQuery.bind(this, false)}>
-                Add query
-            </button>;
+            addButton =
+                <button className="btn btn-primary add-query-btn" onClick={this.createNewQuery.bind(this, false)}>
+                    Add query
+                </button>;
         } else {
-            queries = <p>There are no queries in the list</p>;
-            addButton = <button className="btn btn-primary" onClick={this.createNewQuery.bind(this, true)}>
-                Add first query
-            </button>;
+            queries = <p style={{padding: '15px'}}>There are no queries in the list</p>;
+            addButton =
+                <button className="btn btn-primary add-query-btn" onClick={this.createNewQuery.bind(this, true)}>
+                    Add first query
+                </button>;
         }
 
         return <div className="app-container">

@@ -20,7 +20,7 @@ export default class Result extends React.Component<IResultProps, {}> {
                     <option value="application/sparql-results+json">JSON</option>
                 </select>
             </div>
-            <textarea disabled="disabled" value={this.props.result} placeholder="Your results will be here once you run your query"/>
+            <textarea disabled={true} value={this.props.result} placeholder="Your results will be here once you run your query"/>
         </div>;
     }
 }

@@ -11,6 +11,7 @@ interface IQuery {
 interface IQueryItemProps {
     id: string,
     queryName: string,
+    isSelected: boolean,
     onSelect(): void,
     onDelete(): void
 }

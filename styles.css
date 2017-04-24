@@ -13,6 +13,10 @@ body {
   height: 100vh;
 }
 
+.list-container {
+  padding: 0;
+}
+
 .editor-container, .result-container {
   border-left: 1px solid #cdcdcd;
   background-color: #f9f9f9;
@@ -21,7 +25,7 @@ body {
 .app-name {
   text-transform: uppercase;
   margin-bottom: 10px;
-  padding: 15px 5px 5px 5px;
+  padding: 15px 15px 5px 15px;
   font-weight: bold;
 }
 
@@ -89,6 +93,15 @@ body {
   overflow: hidden;
   white-space: nowrap;
   min-width: 155px;
+  padding: 0 0 0 15px;
+}
+
+.query-item-wrapper:hover {
+  background-color: #f9f9f9;
+}
+
+.query-item-wrapper.selected {
+  background-color: #ebebeb;
 }
 
 .query-item {
@@ -102,11 +115,12 @@ body {
 
 .query-name {
   line-height: 20px;
-  padding: 6px;
+  padding: 6px 0;
   vertical-align: middle;
   text-overflow: ellipsis;
   overflow: auto;
   max-width: 120px;
+  width: calc(100% - 32px);
 }
 
 .delete-btn {
@@ -119,4 +133,8 @@ input[type=text] {
 
 label {
   text-transform: uppercase;
+}
+
+.add-query-btn {
+  margin-left: 15px;
 }

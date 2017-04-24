@@ -41,7 +41,7 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
         if (this.state.query.id !== '') {
             return <div className="editor">
                 <div className="tab-controls">
-                    <button className="btn btn-primary mx-2" onClick={this.props.onSave.bind(this, this.state.query)}>
+                    <button className="btn btn-primary" onClick={this.props.onSave.bind(this, this.state.query)}>
                         Save
                     </button>
                     <button className="btn btn-primary" onClick={this.props.onRun.bind(this, this.state.query.query)}>
@@ -55,7 +55,7 @@ export default class Editor extends React.Component<IEditorProps, IEditorState> 
                 </div>
                 <div className="form-group">
                     <label htmlFor="description-input">Description</label>
-                    <textarea type="text" id="description-input" rows="2" className="form-control"
+                    <textarea type="text" id="description-input" rows={2} className="form-control"
                               value={this.state.query.description}
                               onChange={this.handleDescriptionEditing.bind(this)}/>
                 </div>
